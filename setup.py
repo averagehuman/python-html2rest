@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
-from distutils import setup
 import os
 from os.path import join as pathjoin, exists as pathexists, dirname, basename, abspath
+from distutils.core import setup
 
 import re
 version_rx = r"^__version__ = '(.*)'$"
