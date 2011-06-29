@@ -47,6 +47,5 @@ setup(
         scripts = [
             pathjoin(installdir, 'bin', 'html2rest'),
         ],
-        install_requires=requires,
 )
     
