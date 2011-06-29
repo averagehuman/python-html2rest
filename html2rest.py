@@ -29,6 +29,7 @@ import re
 from sgmllib import SGMLParser
 from StringIO import StringIO
 from textwrap import TextWrapper
+from urllib2 import urlparse
 
 CODEBLOCK = '::'
 BLOCKTAGS = ['div', 'blockquote']
@@ -71,10 +72,17 @@ def readsoup(html, convert='html', encoding='utf8'):
     return str(BeautifulSoup(html, convertEntities=convert,
                                             fromEncoding=encoding))
 
-def html2rest(html, writer=sys.stdout, encoding='utf8', preprocess=None):
+def html2rest(html, writer=sys.stdout, encoding='utf8', relto=None, preprocess=None):
+    relroot = relpath = None
+    if relto:
+        parsed = urlparse(relto)
+        relroot = parsed.scheme + '://' + parsed.netloc
+        relpath = relroot + parsed.path
+        if relpath[-1] != '/':
+            relpath += '/'
     if preprocess:
         html = preprocess(html, encoding=encoding)
-    parser = Parser(writer)
+    parser = Parser(writer, encoding, relroot, relpath)
     #parser.feed(readsoup(html))
     parser.feed(html.decode(encoding))
     parser.close()
@@ -123,10 +131,12 @@ class LineBuffer(object):
 
 class Parser(SGMLParser):
 
-    def __init__(self, writer=sys.stdout, encoding='utf8'):
+    def __init__(self, writer=sys.stdout, encoding='utf8', relroot=None, relpath=None):
         SGMLParser.__init__(self)
         self.writer = writer
         self.encoding = encoding
+        self.relroot = relroot
+        self.relpath = relpath
         self.stringbuffer = StringIO()
         self.linebuffer = LineBuffer()
         self.verbatim = False
@@ -238,6 +248,11 @@ class Parser(SGMLParser):
         href = dict(attrs).get('href', None)
         if not href or href.startswith('#'):
             return
+        elif self.relroot and self.relpath:
+            if href.startswith('/'):
+                href = self.relroot + href
+            elif '://' not in href:
+                href = self.relpath + href
         self.data('`')
         self.hrefs['#pending'] = href
 

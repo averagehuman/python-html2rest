@@ -18,10 +18,15 @@ if args:
         encoding = args[1]
     else:
         encoding = 'utf8'
+    if arg[-1] == '/':
+        arg = arg[:-1]
+    relto = arg.rpartition('/')[0]
+    raise Exception(relto)
 else:
     fileobj = sys.stdin
+    relto = None
 try:
-    html2rest(fileobj.read(), encoding=encoding)
+    html2rest(fileobj.read(), encoding=encoding, relto=relto)
 finally:
     try:
         fileobj.close()
