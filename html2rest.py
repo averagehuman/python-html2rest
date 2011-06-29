@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #-----------------------------------------------------------------------------
 # Copyright (c) 2006-2011  Gerard Flanagan
 #
@@ -35,7 +36,7 @@ IGNORETAGS = ['title', 'style', 'script']
 UNDERLINES = list('=-~`+;')
 
 # Fredrik Lundh, http://effbot.org/zone/re-sub.html
-def unescape(text):
+def unescape(text, to_encoding='utf8'):
     def fixup(m):
         text = m.group(0)
         if text[:2] == "&#":
@@ -55,7 +56,28 @@ def unescape(text):
             except KeyError:
                 pass
         return text # leave as is
-    return re.sub("&#?\w+;", fixup, text)
+    return re.sub("&#?\w+;", fixup, text).encode(to_encoding)
+
+try:
+    from BeautifulSoup import BeautifulSoup
+except ImportError:
+    def BeautifulSoup(text, *args, **kw):
+        return text
+
+def readsoup(html, convert='html', encoding='utf8'):
+    #for br in ['<br>', '<br/>', '<br />']:
+    #    text = text.replace(br, '\n')
+    #    text = text.replace(br.upper(), '\n')
+    return str(BeautifulSoup(html, convertEntities=convert,
+                                            fromEncoding=encoding))
+
+def html2rest(html, writer=sys.stdout, encoding='utf8', preprocess=None):
+    if preprocess:
+        html = preprocess(html, encoding=encoding)
+    parser = Parser(writer)
+    #parser.feed(readsoup(html))
+    parser.feed(html.decode(encoding))
+    parser.close()
 
 class LineBuffer(object):
 
@@ -101,9 +123,10 @@ class LineBuffer(object):
 
 class Parser(SGMLParser):
 
-    def __init__(self, writer=sys.stdout):
+    def __init__(self, writer=sys.stdout, encoding='utf8'):
         SGMLParser.__init__(self)
         self.writer = writer
+        self.encoding = encoding
         self.stringbuffer = StringIO()
         self.linebuffer = LineBuffer()
         self.verbatim = False
@@ -122,7 +145,7 @@ class Parser(SGMLParser):
             if self.inblock > 1:
                 indent = 4 * (self.inblock - 1)
                 self.linebuffer.indent(indent)
-            self.writer.write(unescape(self.linebuffer.read()))
+            self.writer.write(unescape(self.linebuffer.read(), self.encoding))
             self.linebuffer.clear()
 
     def flush_stringbuffer(self):
@@ -219,7 +242,7 @@ class Parser(SGMLParser):
         self.hrefs['#pending'] = href
 
     def end_a(self):
-        if self.hrefs['#pending']:
+        if '#pending' in self.hrefs:
             self.data('`_')
             del self.hrefs['#pending']
 
@@ -367,26 +390,4 @@ class Parser(SGMLParser):
             if href[0] != '#':
                 self.writeline('.. _%s: %s' % (link, href))
         self.end_p()
-
-try:
-    from BeautifulSoup import BeautifulSoup
-except ImportError:
-    def BeautifulSoup(text, *args, **kw):
-        return text
-
-def readsoup(fileobj, convert='html', encoding='utf8'):
-    if hasattr(fileobj, 'read'):
-        text = fileobj.read()
-    else:
-        text = open(fileobj, 'rb').read()
-    #for br in ['<br>', '<br/>', '<br />']:
-    #    text = text.replace(br, '\n')
-    #    text = text.replace(br.upper(), '\n')
-    return str(BeautifulSoup(text, convertEntities=convert,
-                                            fromEncoding=encoding))
-
-def html2rest(html, writer=sys.stdout):
-    parser = Parser(writer)
-    parser.feed(html)
-    parser.close()
 

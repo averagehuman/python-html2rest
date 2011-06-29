@@ -7,16 +7,21 @@ import codecs
 from html2rest import html2rest
 
 fileobj = None
-if sys.argv[1:]:
-    arg = sys.argv[1]
-    if arg.startswith('http://'):
+args = sys.argv[1:]
+if args:
+    arg = args[0]
+    if '://' in arg:
         fileobj = urllib.urlopen(arg)
     else:
-        fileobj = codecs.open(arg, 'rb', 'utf8')
+        fileobj = open(arg, 'rb')
+    if len(args) > 1:
+        encoding = args[1]
+    else:
+        encoding = 'utf8'
 else:
     fileobj = sys.stdin
 try:
-    html2rest(fileobj.read())
+    html2rest(fileobj.read(), encoding=encoding)
 finally:
     try:
         fileobj.close()

@@ -2,12 +2,39 @@
 html2rest.py
 ============
 
-Convert HTML to restructuredText. Very limited, but intended as an "80%" tool, to be
+Convert HTML to restructuredText. Very limited, but intended as a "50%" tool, to be
 followed by manual editing.
+
+Install
+#######
+
+::
+
+    easy_install html2rest
+
+Or::
+
+    pip install html2rest
 
 Usage
 #####
 
-::
+From the command line::
 
+    html2rest http://sphinx.pocoo.org/templating.html > templating.rst
+
+Or programmatically::
+
+    from html2rest import html2rest
+
+    stream = StringIO()
+
+    html2rest('<ul><li>one</li><li>two</li></ul>', writer=stream)
+
+Specify input encoding (default is 'utf8') and a preprocessor::
+
+    def strip_chars(html):
+        return html.replace('¶', '')
     
+    html2rest(html, writer=stream, encoding='latin1', preprocess=strip_chars)
+
