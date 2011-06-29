@@ -1,0 +1,15 @@
+
+syntax: glob
+
+*.pyc
+*~
+*.swp
+*.tmp
+tests/out
+dist/*
+*.egg-info*
+*bak
+tmp/*
+*.orig
+
+

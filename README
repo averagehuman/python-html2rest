@@ -1,0 +1,13 @@
+
+html2rest.py
+============
+
+Convert HTML to restructuredText. Very limited, but intended as an "80%" tool, to be
+followed by manual editing.
+
+Usage
+#####
+
+::
+
+    
