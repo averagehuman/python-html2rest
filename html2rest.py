@@ -75,7 +75,7 @@ def readsoup(html, convert='html', encoding='utf8'):
 def html2rest(html, writer=sys.stdout, encoding='utf8', relto=None, preprocess=None):
     relroot = relpath = None
     if relto:
-        parsed = urlparse(relto)
+        parsed = urlparse.urlparse(relto)
         relroot = parsed.scheme + '://' + parsed.netloc
         relpath = relroot + parsed.path
         if relpath[-1] != '/':
@@ -248,7 +248,7 @@ class Parser(SGMLParser):
         href = dict(attrs).get('href', None)
         if not href or href.startswith('#'):
             return
-        elif self.relroot and self.relpath:
+        elif self.relroot and self.relpath and 'mailto:' not in href:
             if href.startswith('/'):
                 href = self.relroot + href
             elif '://' not in href:
