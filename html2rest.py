@@ -25,7 +25,6 @@ __version__ = '0.2dev'
 import sys
 import os
 import re
-import codecs
 from sgmllib import SGMLParser
 from StringIO import StringIO
 from textwrap import TextWrapper
@@ -390,23 +389,4 @@ def html2rest(html, writer=sys.stdout):
     parser = Parser(writer)
     parser.feed(html)
     parser.close()
-
-if __name__ == '__main__':
-    # Eg.
-    # python html2rest.py http://sphinx.pocoo.org/intro.html > intro.rst
-    fileobj = None
-    if sys.argv[1:]:
-        arg = sys.argv[1]
-        if arg.startswith('http://'):
-            import urllib
-            fileobj = urllib.urlopen(arg)
-        else:
-            fileobj = codecs.open(arg, 'rb', 'utf8')
-    else:
-        fileobj = sys.stdin
-    try:
-        html2rest(fileobj.read())#readsoup(fileobj))
-    finally:
-        fileobj.close()
-
 

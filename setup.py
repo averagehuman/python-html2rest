@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 from distutils import setup
+import os
+from os.path import join as pathjoin, exists as pathexists, dirname, basename, abspath
 
 import re
 version_rx = r"^__version__ = '(.*)'$"
@@ -18,6 +20,8 @@ finally:
     fd.close()
 
 __version__ = m.group(1)
+
+installdir = dirname(abspath(__file__))
 
 print "running setup for html2rest version %s" % __version__
 
@@ -40,6 +44,9 @@ setup(
         license="BSD",
         download_url="http://pypi.python.org/packages/source/h/html2rest/html2rest-%s.tar.gz" % __version__,
         py_modules=['html2rest'],
+        scripts = [
+            pathjoin(installdir, 'bin', 'html2rest'),
+        ],
         install_requires=requires,
 )
     
