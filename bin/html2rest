@@ -3,6 +3,7 @@
 import sys
 import urllib
 import codecs
+import locale
 
 from html2rest import html2rest
 
@@ -23,6 +24,7 @@ if args:
     relto = arg.rpartition('/')[0]
 else:
     fileobj = sys.stdin
+    encoding = locale.getpreferredencoding() or 'utf-8'
     relto = None
 try:
     html2rest(fileobj.read(), encoding=encoding, relto=relto)
