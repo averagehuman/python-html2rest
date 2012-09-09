@@ -21,7 +21,7 @@ finally:
 
 __version__ = m.group(1)
 
-installdir = dirname(abspath(__file__))
+srcdir = dirname(abspath(__file__))
 
 print "running setup for html2rest version %s" % __version__
 
@@ -40,12 +40,12 @@ setup(
                     "Topic :: Software Development :: Libraries",
                     "Topic :: Software Development :: Libraries :: Python Modules",
                     ],
-        url="http://wefft.codebasehq.com/python/html2rest",
+        url="https://github.com/podados/python-html2rest",
         license="BSD",
         download_url="http://pypi.python.org/packages/source/h/html2rest/html2rest-%s.tar.gz" % __version__,
         py_modules=['html2rest'],
         scripts = [
-            pathjoin(installdir, 'bin', 'html2rest'),
+            pathjoin(srcdir, 'bin', 'html2rest'),
         ],
 )
     
