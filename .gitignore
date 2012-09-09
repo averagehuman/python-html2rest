@@ -1,0 +1,11 @@
+*.pyc
+*.swp
+build/
+pip-log.txt
+*~
+dist/
+*.egg-info/
+example.db
+demo/media/
+
+
